@@ -80,6 +80,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlFunctions.cs" />
+    <Compile Include="TeplateList.cs" />
     <Compile Include="testData.cs" />
     <EmbeddedResource Include="FormReport.resx">
       <DependentUpon>FormReport.cs</DependentUpon>

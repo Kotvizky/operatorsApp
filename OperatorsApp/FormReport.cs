@@ -16,35 +16,37 @@ namespace ProjectsReport
     {
 
         Binding[] bindings;
-
-        DataSet valuesTable = new DataSet();
-        DataTable values;
         Parameters valuesList;
 
         const string TableName = "Values";
 
-        public FormReport(string contractInfo, string paramTemplate,string paramValue)
+        public FormReport()
         {
             InitializeComponent();
+        }
+
+        public void initDialog(string contractInfo, string paramTemplate, string paramValue)
+        {
             webContractInfo.DocumentText = contractInfo;
-            valuesList = new Parameters(paramTemplate,paramValue);
-            valuesList.Table.TableName = TableName;
-            valuesTable.Tables.Add(valuesList.Table);
-            values = valuesTable.Tables[TableName];
+            valuesList = new Parameters(paramTemplate, paramValue);
             initValues();
         }
 
         void initValues()
         {
             TableLayoutPanel panel = paramTable;
-            foreach (Paramerer value in valuesList)
+            panel.Controls.Clear();
+            panel.RowCount = 0;
+            foreach (Props value in valuesList)
             {
                 panel.RowCount = panel.RowCount + 1;
                 MaskedTextBox curBox = new MaskedTextBox() { Dock = DockStyle.Bottom, Mask = value.Mask };
                 curBox.DataBindings.Add(new Binding("Text", value, "Value"));
                 panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F));
-                panel.Controls.Add(new Label() { Text = value.ShortName, Dock = DockStyle.Top }, 0, panel.RowCount - 1);
-                panel.Controls.Add(curBox, 1, panel.RowCount - 1);
+                panel.Controls.Add(new Label()
+                    { Text = (value.LongName != null) ? value.LongName :  value.ShortName,
+                        Dock = DockStyle.Top }, 0, panel.RowCount - 1);
+                        panel.Controls.Add(curBox, 1, panel.RowCount - 1);
             }
             panel.RowCount = panel.RowCount + 1;
         }
@@ -63,12 +65,8 @@ namespace ProjectsReport
         {
             string message = string.Empty;
             setTexBoxState(false);
-            foreach (Paramerer value in valuesList)
-            {
-                message += $"\r\n{value.ShortName} -- {value.Value}";
-            }
+            MessageBox.Show(valuesList.JsonValues);
             setTexBoxState(true);
-            MessageBox.Show(message);
         }
 
         void setTexBoxState(bool state)
