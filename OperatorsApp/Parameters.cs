@@ -30,7 +30,7 @@ namespace ProjectsReport
             foreach (KeyValuePair<string, object> entry in propsJson)
             {
                 Dictionary<string, object> values = (Dictionary<string, object>)entry.Value;
-                if (valuesJson.ContainsKey(entry.Key))
+                if ((valuesJson != null) && (valuesJson.ContainsKey(entry.Key)))
                 {
                     values.Add(Props.ValueProperty, valuesJson[entry.Key]);
                 }
@@ -47,10 +47,10 @@ namespace ProjectsReport
                 Dictionary<string, string> valuesList = new Dictionary<string, string>();
                 foreach (Props prop in this)
                 {
+                    if ((prop.Value != null) && (prop.Value.Trim() != ""))
                     valuesList.Add(prop.ShortName,prop.Value);
                 }
-                return (new
-                    JavaScriptSerializer()).Serialize(valuesList);
+                return (new JavaScriptSerializer()).Serialize(valuesList);
             }
         }
     }

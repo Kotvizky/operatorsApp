@@ -15,10 +15,9 @@ namespace ProjectsReport
     public partial class FormReport : Form
     {
 
-        Binding[] bindings;
         Parameters valuesList;
 
-        const string TableName = "Values";
+        public string result;
 
         public FormReport()
         {
@@ -34,6 +33,9 @@ namespace ProjectsReport
 
         void initValues()
         {
+
+            result = string.Empty;
+
             TableLayoutPanel panel = paramTable;
             panel.Controls.Clear();
             panel.RowCount = 0;
@@ -44,29 +46,36 @@ namespace ProjectsReport
                 curBox.DataBindings.Add(new Binding("Text", value, "Value"));
                 panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F));
                 panel.Controls.Add(new Label()
-                    { Text = (value.LongName != null) ? value.LongName :  value.ShortName,
-                        Dock = DockStyle.Top }, 0, panel.RowCount - 1);
-                        panel.Controls.Add(curBox, 1, panel.RowCount - 1);
+                {
+                    Text = (value.LongName != null) ? value.LongName : value.ShortName,
+                    Dock = DockStyle.Top
+                }, 0, panel.RowCount - 1);
+                panel.Controls.Add(curBox, 1, panel.RowCount - 1);
             }
             panel.RowCount = panel.RowCount + 1;
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-
+            this.Close();
         }
 
-        class Test {
+        class Test
+        {
             public int номер { set; get; }
             public string str { set; get; }
         }
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        private void toolStripMenuItem1_Save(object sender, EventArgs e)
         {
-            string message = string.Empty;
+            saveValues();
+            Close();
+        }
+
+        void saveValues()
+        {
             setTexBoxState(false);
-            MessageBox.Show(valuesList.JsonValues);
-            setTexBoxState(true);
+            result = valuesList.JsonValues;
         }
 
         void setTexBoxState(bool state)
@@ -80,5 +89,34 @@ namespace ProjectsReport
             }
         }
 
+        private void FormReport_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    this.Close();
+                    break;
+                case Keys.Enter:
+                    saveValues();
+                    this.Close();
+                    break;
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message message, Keys keys)
+        {
+            switch (keys)
+            {
+                case Keys.Escape:
+                    this.Close();
+                    return false;
+                case Keys.Enter:
+                    saveValues();
+                    this.Close();
+                    return false;
+            }
+            return false;
+        }
     }
 }

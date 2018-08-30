@@ -135,6 +135,7 @@
             this.gOldProgects.Name = "gOldProgects";
             this.gOldProgects.Size = new System.Drawing.Size(496, 270);
             this.gOldProgects.TabIndex = 1;
+            this.gOldProgects.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gNewProgects_CellContentClick);
             this.gOldProgects.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.gOldProgects_CellPainting);
             // 
             // Form1

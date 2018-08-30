@@ -141,9 +141,15 @@ namespace ProjectsReport
             {
                 int row = e.RowIndex;
                 DataRowView dr = dvg.Rows[row].DataBoundItem as DataRowView;
-                showReport(testData.ContractInfoInit,testData.Tmpl,testData.Values); //TODO take values for repotrForm from table;
-                //MessageBox.Show(dr["ContractId"].ToString());
-                dvg.Rows[row].Cells["report"].Value = true;
+                DataGridViewCell contactReport = dvg.Rows[row].Cells["RepordDesc"];
+                dialog.initDialog(testData.ContractInfoInit, testData.Tmpl, contactReport.Value.ToString());  
+                dialog.ShowDialog();
+                if (dialog.result != string.Empty)
+                {
+                    contactReport.Value = dialog.result;
+                    dvg.Rows[row].Cells["report"].Value = true;
+                }
+                dr.EndEdit();
             }
         }
 
