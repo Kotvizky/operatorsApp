@@ -14,39 +14,51 @@ namespace ProjectsReport
         static public SqlConnection conn { get; private set; } =
             new SqlConnection(Properties.Settings.Default.collect);
 
+        public static string field_Marked = "Marked";
+        public static string field_Report = "Report";
+        public static string field_Surname = "Surname";
 
-//        static private SqlCommand getProgects = new SqlCommand();
 
-        static SqlDataAdapter projectsAdapter = new SqlDataAdapter(@"
-                select 
+        public static string[] invisibleColumns = new string[]
+            {"ProjectId","id"};
 
-	                ContractNum , ExecuteDate ,
-	                contractDesc  , operatorDesc ,
-	                Login , ContractId , ActivityId ,
-	                report
-	                ,t0.ContactWithId 
-                from fn_reportNFS(@DateActivity) t0
-                --where t0.ActivityId = 218998706
-                order by t0.ExecuteDate
+        static SqlDataAdapter projectListAdapter = new SqlDataAdapter(@"
+        select * from pr_contactList(@DateActivity, null)                
                 ",
             conn);
+
+        static SqlDataAdapter projectsAdapter = new SqlDataAdapter(@"
+            select * from pr_projects where id = @id
+                ",
+            conn);
+
 
         //static SqlCommandBuilder projectsBuider = new SqlCommandBuilder(getProgects);
 
         static SqlFunctions()
         {
-            projectsAdapter.SelectCommand.Parameters.Add("@DateActivity", SqlDbType.DateTime); ;
+            projectListAdapter.SelectCommand.Parameters.Add("@DateActivity", SqlDbType.DateTime); ;
         }
 
         //string sqlGetProgects = "";
 
-        static public void fillProjectsTable(DataTable table, DateTime date)
+        static public void fillProjectListTable(DataTable table, DateTime date)
         {
             if (conn.State == ConnectionState.Closed) conn.Open();
-            projectsAdapter.SelectCommand.Parameters[0].Value = date;
-            projectsAdapter.Fill(table);
+            projectListAdapter.SelectCommand.Parameters[0].Value = date;
+            table.Clear();
+            projectListAdapter.Fill(table);
             conn.Close();
         }
+
+        static public void fillProjectsTable(DataTable table, int id)
+        {
+            if (conn.State == ConnectionState.Closed) conn.Open();
+            projectsAdapter.SelectCommand.Parameters[0].Value = id;
+            projectListAdapter.Fill(table);
+            conn.Close();
+        }
+
 
     }
 }

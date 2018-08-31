@@ -2,28 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 
 namespace ProjectsReport
 {
-    class TeplateList: Dictionary<int,string>
+    class TeplateList
     {
-        public string getTmpl(int i)
+
+        const string TMPL_PARAMS = "TmplParams";
+        const string TMPL_HTML = "TmplHtml";
+        
+
+        public string[] getTmpl(int i)
         {
-            if (this.ContainsKey(i))
+            if ( i == id)
             {
-                return this[i];
+                return getTmplFromRow();
             }
-            else
+
+            if ((Projects == null) || ((Project = Projects.Rows.Find(i)) == null))
             {
-                return initTmpl(i);
+                initTmpl(i);
             }
+
+            return getTmplFromRow();
         }
 
-        string initTmpl(int i)
+        string[] getTmplFromRow()
         {
-            string tmpl = testData.Tmpl; // TODO describe method
-            this.Add(i, tmpl);
-            return tmpl;
+            if (Project == null)
+            {
+                return null;
+            }
+            return new string[] { Project[TMPL_PARAMS].ToString(), Project[TMPL_HTML].ToString() };
         }
+
+
+        int id;
+
+        void initTmpl(int i)
+        {
+            id = i;
+            bool setKey = (Projects == null);
+            SqlFunctions.fillProjectsTable(Projects, id);
+            if (setKey)
+            {
+                // TODO set primary key in the projects table
+            }
+            Project = Projects.Rows.Find(id);
+        }
+
+        DataTable Projects;
+
+        DataRow Project;
+
     }
+
+
 }

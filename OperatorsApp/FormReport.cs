@@ -12,7 +12,7 @@ using System.Web.Script.Serialization;
 
 namespace ProjectsReport
 {
-    public partial class FormReport : Form
+    public partial class FormReport : Form 
     {
 
         Parameters valuesList;
@@ -24,8 +24,9 @@ namespace ProjectsReport
             InitializeComponent();
         }
 
-        public void initDialog(string contractInfo, string paramTemplate, string paramValue)
+        public void initDialog(string contractInfo, string paramTemplate, string paramValue, string title)
         {
+            this.Text = title;
             webContractInfo.DocumentText = contractInfo;
             valuesList = new Parameters(paramTemplate, paramValue);
             initValues();
@@ -58,12 +59,6 @@ namespace ProjectsReport
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        class Test
-        {
-            public int номер { set; get; }
-            public string str { set; get; }
         }
 
         private void toolStripMenuItem1_Save(object sender, EventArgs e)
@@ -118,5 +113,6 @@ namespace ProjectsReport
             }
             return false;
         }
+
     }
 }

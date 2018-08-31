@@ -27,22 +27,14 @@ namespace ProjectsReport
             gOldProgects.DataSource = new BindingSource() { DataSource = new DataView(projects) };
         }
 
-
-        string showReport(string contractInfo, string paramTemplate, string paramValue)
-        {
-            dialog.initDialog(contractInfo, paramTemplate, paramValue);
-            dialog.ShowDialog();
-            return string.Empty;
-        }
-
         void tsUpdate_Click(object sender, EventArgs e)
         {
             (gNewProgects.DataSource as BindingSource).RemoveFilter();
             (gOldProgects.DataSource as BindingSource).RemoveFilter();
-            fillProjects(projects);
+            SqlFunctions.fillProjectListTable(projects, activityDate.Value);
             projects.AcceptChanges();
-            (gNewProgects.DataSource as BindingSource).Filter = "report = 0";
-            (gOldProgects.DataSource as BindingSource).Filter  = "report = 1";
+            (gNewProgects.DataSource as BindingSource).Filter = $"{SqlFunctions.field_Marked} = 0";
+            (gOldProgects.DataSource as BindingSource).Filter  = $"{SqlFunctions.field_Marked} = 1";
             addColumns(gOldProgects);
             hideServiseColumn(gOldProgects);
             addColumns(gNewProgects);
@@ -51,8 +43,7 @@ namespace ProjectsReport
 
         void hideServiseColumn(DataGridView dgv)
         {
-            string[] columns = new string[]
-                {"ContractId","ActivityId","ContactWithId"};
+            string[] columns = SqlFunctions.invisibleColumns;
             foreach (DataGridViewColumn column in dgv.Columns)
             {
                 column.Visible = (!columns.Contains(column.Name));
@@ -76,7 +67,7 @@ namespace ProjectsReport
                     };
                     grid.Columns.Add((textColumn as DataGridViewCheckBoxColumn));
                 }
-                else if (column.ColumnName == "ContractNum")
+                else if (column.ColumnName == SqlFunctions.field_Surname)
                 {
                     textColumn = new DataGridViewButtonColumn()
                     {
@@ -97,11 +88,6 @@ namespace ProjectsReport
                     grid.Columns.Add((textColumn as DataGridViewTextBoxColumn));
                 }
             }
-        }
-
-        void fillProjects(DataTable _projects)
-        {
-            testData.fillProjects(_projects);
         }
 
         private void gNewProgects_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
@@ -141,13 +127,14 @@ namespace ProjectsReport
             {
                 int row = e.RowIndex;
                 DataRowView dr = dvg.Rows[row].DataBoundItem as DataRowView;
-                DataGridViewCell contactReport = dvg.Rows[row].Cells["RepordDesc"];
-                dialog.initDialog(testData.ContractInfoInit, testData.Tmpl, contactReport.Value.ToString());  
+                DataGridViewCell contactReport = dvg.Rows[row].Cells[SqlFunctions.field_Report];
+                dialog.initDialog(testData.ContractInfoInit, testData.Tmpl, 
+                    contactReport.Value.ToString(), dvg.Rows[row].Cells[SqlFunctions.field_Surname].Value.ToString());  
                 dialog.ShowDialog();
                 if (dialog.result != string.Empty)
                 {
                     contactReport.Value = dialog.result;
-                    dvg.Rows[row].Cells["report"].Value = true;
+                    dvg.Rows[row].Cells[SqlFunctions.field_Marked].Value = true;
                 }
                 dr.EndEdit();
             }
