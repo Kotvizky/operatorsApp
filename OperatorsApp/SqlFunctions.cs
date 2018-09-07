@@ -16,20 +16,30 @@ namespace ProjectsReport
 
         public static string field_Marked = "Marked";
         public static string field_Report = "Report";
+        public static string field_ProjectName = "Name";
         public static string field_Surname = "Surname";
+        public static string field_contractId = "Id";           // fn_pr_contactList
+        public static string field_projecttId = "ProjectId";    // fn_pr_contactList
+        public static string sql_shema = @"[CORP\IKotvytskyi].";
 
 
         public static string[] invisibleColumns = new string[]
             {"ProjectId","id"};
 
-        static SqlDataAdapter projectListAdapter = new SqlDataAdapter(@"
-        select * from pr_contactList(@DateActivity, null)                
-                ",
+        static SqlDataAdapter contactsAdapter = new SqlDataAdapter(
+            $@" select * from {sql_shema}fn_contactList(@DateActivity, null)",
             conn);
 
-        static SqlDataAdapter projectsAdapter = new SqlDataAdapter(@"
-            select * from pr_projects where id = @id
-                ",
+        static SqlDataAdapter projectsAdapter = new SqlDataAdapter(
+            $@" select * from {sql_shema}projects where id = @id",
+            conn);
+
+        static SqlDataAdapter contactInfoAdapter = new SqlDataAdapter(
+            $@" select* from {sql_shema}fn_ContactInto(@ContactId)",
+            conn);
+
+        static SqlCommand ContactUpdCmd = new SqlCommand(
+            $"update {sql_shema}contacts set Marked = @Marked, Report = @Report  where id = @Id", 
             conn);
 
 
@@ -37,28 +47,53 @@ namespace ProjectsReport
 
         static SqlFunctions()
         {
-            projectListAdapter.SelectCommand.Parameters.Add("@DateActivity", SqlDbType.DateTime); ;
+            contactsAdapter.SelectCommand.Parameters.Add("@DateActivity", SqlDbType.DateTime); ;
+
+            ContactUpdCmd.Parameters.Add("@Marked",SqlDbType.Bit);
+            ContactUpdCmd.Parameters.Add("@Report",SqlDbType.VarChar);
+            ContactUpdCmd.Parameters.Add("@Id",SqlDbType.BigInt);
+            string[] paramsName = new string[] { "Marked", "Report", "Id" };
+            foreach ( string name in paramsName)
+            {
+                ContactUpdCmd.Parameters[$"@{name}"].SourceVersion = DataRowVersion.Current;
+                ContactUpdCmd.Parameters[$"@{name}"].SourceColumn = name;
+            }
+            contactsAdapter.UpdateCommand = ContactUpdCmd;
+            projectsAdapter.SelectCommand.Parameters.Add("@id", SqlDbType.BigInt); ;
+            contactInfoAdapter.SelectCommand.Parameters.Add("@ContactId", SqlDbType.BigInt); ;
+
         }
 
-        //string sqlGetProgects = "";
-
-        static public void fillProjectListTable(DataTable table, DateTime date)
+        static public void fillContactsTable(DataTable table, DateTime date)
         {
             if (conn.State == ConnectionState.Closed) conn.Open();
-            projectListAdapter.SelectCommand.Parameters[0].Value = date;
+            contactsAdapter.SelectCommand.Parameters[0].Value = date;
             table.Clear();
-            projectListAdapter.Fill(table);
+            contactsAdapter.Fill(table);
             conn.Close();
         }
 
-        static public void fillProjectsTable(DataTable table, int id)
+        static public void fillProjectsTable(DataTable table, long id)
         {
             if (conn.State == ConnectionState.Closed) conn.Open();
             projectsAdapter.SelectCommand.Parameters[0].Value = id;
-            projectListAdapter.Fill(table);
+            projectsAdapter.Fill(table);
             conn.Close();
         }
 
+        static public void fillContactInfoTable(DataTable table, long ContactId)
+        {
+            if (conn.State == ConnectionState.Closed) conn.Open();
+            contactInfoAdapter.SelectCommand.Parameters[0].Value = ContactId;
+            contactInfoAdapter.Fill(table);
+            conn.Close();
+        }
 
+        static public void updContacts(DataTable table)
+        {
+            if (conn.State == ConnectionState.Closed) conn.Open();
+            contactsAdapter.Update(table);
+            conn.Close();
+        }
     }
 }

@@ -82,7 +82,7 @@
     <Compile Include="SqlFunctions.cs" />
     <Compile Include="TeplateList.cs" />
     <Compile Include="testData.cs" />
-    <Compile Include="TMPLEngine.cs" />
+    <Compile Include="TmplEngine.cs" />
     <EmbeddedResource Include="FormReport.resx">
       <DependentUpon>FormReport.cs</DependentUpon>
     </EmbeddedResource>

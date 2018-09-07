@@ -56,8 +56,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.paramTable);
             this.splitContainer1.Panel2.Controls.Add(this.menuStrip1);
-            this.splitContainer1.Size = new System.Drawing.Size(396, 352);
-            this.splitContainer1.SplitterDistance = 125;
+            this.splitContainer1.Size = new System.Drawing.Size(396, 437);
+            this.splitContainer1.SplitterDistance = 155;
             this.splitContainer1.TabIndex = 0;
             // 
             // webContractInfo
@@ -66,7 +66,7 @@
             this.webContractInfo.Location = new System.Drawing.Point(0, 0);
             this.webContractInfo.MinimumSize = new System.Drawing.Size(20, 20);
             this.webContractInfo.Name = "webContractInfo";
-            this.webContractInfo.Size = new System.Drawing.Size(396, 125);
+            this.webContractInfo.Size = new System.Drawing.Size(396, 155);
             this.webContractInfo.TabIndex = 0;
             // 
             // paramTable
@@ -81,7 +81,7 @@
             this.paramTable.Name = "paramTable";
             this.paramTable.RowCount = 1;
             this.paramTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.paramTable.Size = new System.Drawing.Size(396, 199);
+            this.paramTable.Size = new System.Drawing.Size(396, 254);
             this.paramTable.TabIndex = 1;
             // 
             // menuStrip1
@@ -90,7 +90,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.toolStripMenuItem2});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 199);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 254);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(396, 24);
             this.menuStrip1.TabIndex = 0;
@@ -114,11 +114,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(396, 352);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(396, 437);
             this.Controls.Add(this.splitContainer1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormReport";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "DialogReport";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormReport_KeyDown);
             this.splitContainer1.Panel1.ResumeLayout(false);

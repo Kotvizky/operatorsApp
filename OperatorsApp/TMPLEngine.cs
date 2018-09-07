@@ -6,11 +6,11 @@ using System.Data;
 
 namespace ProjectsReport
 {
-    class TMPLEngine
+    static class TmplEngine
     {
-        public string Template = string.Empty;
-        public DataTable Values;
-        public string Html 
+        static string Template = string.Empty;
+        static DataTable Values = new DataTable();
+        public static string Html 
         {
             get
             {
@@ -18,7 +18,7 @@ namespace ProjectsReport
                 {
                     return string.Empty;
                 }
-                string result = string.Empty;
+                string result = Template;
                 foreach (DataColumn column in Values.Columns)
                 {
                     result = result.Replace("{{" + column.ColumnName + "}}",
@@ -28,9 +28,18 @@ namespace ProjectsReport
             }
         }
 
-        public void initTable(int ContactId)
+        static long ContactId;
+
+        public static string getContent(long contactId, string template)
         {
-            //TODO Add SQL to get contact data
+            Template = template;
+            if  (ContactId != contactId)
+            {
+                ContactId = contactId;
+                Values.Clear();
+                SqlFunctions.fillContactInfoTable(Values, ContactId);
+            }
+            return Html;
         }
     }
 }

@@ -31,10 +31,14 @@ namespace ProjectsReport
         {
             (gNewProgects.DataSource as BindingSource).RemoveFilter();
             (gOldProgects.DataSource as BindingSource).RemoveFilter();
-            SqlFunctions.fillProjectListTable(projects, activityDate.Value);
-            projects.AcceptChanges();
+            SqlFunctions.fillContactsTable(projects, activityDate.Value);
+            //projects.AcceptChanges();
+            if (projects.Columns.Count == 0 )
+            {
+                return;
+            }
             (gNewProgects.DataSource as BindingSource).Filter = $"{SqlFunctions.field_Marked} = 0";
-            (gOldProgects.DataSource as BindingSource).Filter  = $"{SqlFunctions.field_Marked} = 1";
+            (gOldProgects.DataSource as BindingSource).Filter = $"{SqlFunctions.field_Marked} = 1";
             addColumns(gOldProgects);
             hideServiseColumn(gOldProgects);
             addColumns(gNewProgects);
@@ -100,7 +104,6 @@ namespace ProjectsReport
             gHightLightChanged((sender as DataGridView), e.RowIndex, e.CellStyle);
         }
 
-
         void gHightLightChanged(DataGridView dvg, int i, DataGridViewCellStyle CellStyle)
         {
             if (i < 0) return;
@@ -115,7 +118,8 @@ namespace ProjectsReport
 
         private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            projects.AcceptChanges();
+            SqlFunctions.updContacts(projects);
+                //projects.AcceptChanges();
         }
 
         private void gNewProgects_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -128,8 +132,14 @@ namespace ProjectsReport
                 int row = e.RowIndex;
                 DataRowView dr = dvg.Rows[row].DataBoundItem as DataRowView;
                 DataGridViewCell contactReport = dvg.Rows[row].Cells[SqlFunctions.field_Report];
-                dialog.initDialog(testData.ContractInfoInit, testData.Tmpl, 
-                    contactReport.Value.ToString(), dvg.Rows[row].Cells[SqlFunctions.field_Surname].Value.ToString());  
+                long projectId = (long)dr[SqlFunctions.field_projecttId];
+                long contactId = (long)dr[SqlFunctions.field_contractId];
+                string reportValuesJson = contactReport.Value.ToString();
+                string formTitle = $"{dvg.Rows[row].Cells[SqlFunctions.field_ProjectName].Value} -- {dvg.Rows[row].Cells[SqlFunctions.field_Surname].Value}";
+                string htmlTemplate = templateList.GetHtmpTmpl(projectId);
+                string htmlContent = TmplEngine.getContent(contactId, htmlTemplate );
+                dialog.initDialog(htmlContent, templateList.GetParamTmpl(projectId),
+                    reportValuesJson, formTitle);
                 dialog.ShowDialog();
                 if (dialog.result != string.Empty)
                 {

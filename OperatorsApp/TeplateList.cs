@@ -9,54 +9,51 @@ namespace ProjectsReport
     class TeplateList
     {
 
-        const string TMPL_PARAMS = "TmplParams";
         const string TMPL_HTML = "TmplHtml";
-        
+        const string TMPL_PARAMS = "TmplParams";
+        const string PRIMARY_KEY = "Id";
 
-        public string[] getTmpl(int i)
+        long ProjectId;
+
+        void initTmpl(long projectId)
         {
-            if ( i == id)
+            if (ProjectId == projectId)
             {
-                return getTmplFromRow();
+                return;
             }
-
-            if ((Projects == null) || ((Project = Projects.Rows.Find(i)) == null))
+            ProjectId = projectId;
+            SqlFunctions.fillProjectsTable(Projects, ProjectId);
+            if (Projects.PrimaryKey.Length == 0)
             {
-                initTmpl(i);
+                Projects.PrimaryKey = new DataColumn[] { Projects.Columns[PRIMARY_KEY] };
             }
-
-            return getTmplFromRow();
+            Project = Projects.Rows.Find(ProjectId);
         }
 
-        string[] getTmplFromRow()
+        public string GetHtmpTmpl(long projectId)
         {
-            if (Project == null)
-            {
-                return null;
-            }
-            return new string[] { Project[TMPL_PARAMS].ToString(), Project[TMPL_HTML].ToString() };
+            return getTmpl(projectId, TMPL_HTML);
         }
 
-
-        int id;
-
-        void initTmpl(int i)
+        public string GetParamTmpl(long projectId)
         {
-            id = i;
-            bool setKey = (Projects == null);
-            SqlFunctions.fillProjectsTable(Projects, id);
-            if (setKey)
-            {
-                // TODO set primary key in the projects table
-            }
-            Project = Projects.Rows.Find(id);
+            return getTmpl(projectId, TMPL_PARAMS);
         }
 
-        DataTable Projects;
+        string getTmpl(long projectId, string tmplName)
+        {
+            initTmpl(projectId);
+            string result = string.Empty;
+            if (Project != null)
+            {
+                result = Project[tmplName].ToString();
+            }
+            return result;
+        }
+
+        DataTable Projects = new DataTable();
 
         DataRow Project;
-
     }
-
-
 }
+
