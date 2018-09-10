@@ -83,6 +83,7 @@
     <Compile Include="TeplateList.cs" />
     <Compile Include="testData.cs" />
     <Compile Include="TmplEngine.cs" />
+    <Compile Include="User.cs" />
     <EmbeddedResource Include="FormReport.resx">
       <DependentUpon>FormReport.cs</DependentUpon>
     </EmbeddedResource>

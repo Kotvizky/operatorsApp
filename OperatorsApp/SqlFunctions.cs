@@ -22,6 +22,7 @@ namespace ProjectsReport
         public static string field_projecttId = "ProjectId";    // fn_pr_contactList
         public static string sql_shema = @"[CORP\IKotvytskyi].";
 
+        #region SQL Queries
 
         public static string[] invisibleColumns = new string[]
             {"ProjectId","id"};
@@ -42,8 +43,14 @@ namespace ProjectsReport
             $"update {sql_shema}contacts set Marked = @Marked, Report = @Report  where id = @Id", 
             conn);
 
+        static SqlCommand getUser = new SqlCommand(
+            $"select FullName from [User] where login = @user",
+            conn);
 
-        //static SqlCommandBuilder projectsBuider = new SqlCommandBuilder(getProgects);
+        static SqlCommand checkProjectManager = new SqlCommand(
+            $"select 0 result from {sql_shema}[User] where IsPm = 1 and [Login] = @user",
+            conn);
+        #endregion
 
         static SqlFunctions()
         {
@@ -60,8 +67,39 @@ namespace ProjectsReport
             }
             contactsAdapter.UpdateCommand = ContactUpdCmd;
             projectsAdapter.SelectCommand.Parameters.Add("@id", SqlDbType.BigInt); ;
-            contactInfoAdapter.SelectCommand.Parameters.Add("@ContactId", SqlDbType.BigInt); ;
+            contactInfoAdapter.SelectCommand.Parameters.Add("@ContactId", SqlDbType.BigInt);
 
+            getUser.Parameters.Add("@user", SqlDbType.VarChar);
+            checkProjectManager.Parameters.Add("@user", SqlDbType.VarChar);
+
+        }
+
+        static public string getFullUserName(string login)
+        {
+            string result = string.Empty;
+            if (conn.State == ConnectionState.Closed) conn.Open();
+            getUser.Parameters[0].Value = login;
+            SqlDataReader rdr = getUser.ExecuteReader();
+            if (rdr.Read())
+            {
+                result = rdr["FullName"].ToString();
+            }
+            conn.Close();
+            return result; 
+        }
+
+        static public bool isProjectManager(string login)
+        {
+            bool result = false;
+            if (conn.State == ConnectionState.Closed) conn.Open();
+            checkProjectManager.Parameters[0].Value = login;
+            SqlDataReader rdr = checkProjectManager.ExecuteReader();
+            if (rdr.Read())
+            {
+                result = true;
+            }
+            conn.Close();
+            return result; 
         }
 
         static public void fillContactsTable(DataTable table, DateTime date)

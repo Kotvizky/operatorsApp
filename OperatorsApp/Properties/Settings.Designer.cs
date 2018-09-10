@@ -26,7 +26,8 @@ namespace ProjectsReport.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=10.1.32.68;Initial Catalog=Collect;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=10.1.32.68;Initial Catalog=Collect;Persist Security Info=True;User ID" +
+            "=RPUser;Password=RPU1234%^")]
         public string collect {
             get {
                 return ((string)(this["collect"]));

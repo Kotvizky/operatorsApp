@@ -17,10 +17,15 @@ namespace ProjectsReport
         DataTable projects = new DataTable();
         FormReport dialog = new FormReport();
         TeplateList templateList = new TeplateList();
+        User user = new User();
 
         public Form1()
         {
+
             InitializeComponent();
+
+            this.Text = $"Отчет оператора  -- {user.Title}";
+
             gNewProgects.AutoGenerateColumns = false;
             gOldProgects.AutoGenerateColumns = false;
             gNewProgects.DataSource = new BindingSource() { DataSource = new DataView(projects) };
