@@ -28,7 +28,7 @@ namespace ProjectsReport
             {"ProjectId","id"};
 
         static SqlDataAdapter contactsAdapter = new SqlDataAdapter(
-            $@" select * from {sql_shema}fn_contactList(@DateActivity, null)",
+            $@" select * from {sql_shema}fn_contactList(@DateActivity, null, @login)",
             conn);
 
         static SqlDataAdapter projectsAdapter = new SqlDataAdapter(
@@ -50,11 +50,20 @@ namespace ProjectsReport
         static SqlCommand checkProjectManager = new SqlCommand(
             $"select 0 result from {sql_shema}[User] where IsPm = 1 and [Login] = @user",
             conn);
+
+        static SqlCommand cmdUpdateContacts = new SqlCommand(
+        $@"
+            declare @out varChar (250)
+            exec {sql_shema}[sp_addProjectContacts] @out out
+            select @out Result       
+        ",
+            conn);
         #endregion
 
         static SqlFunctions()
         {
             contactsAdapter.SelectCommand.Parameters.Add("@DateActivity", SqlDbType.DateTime); ;
+            contactsAdapter.SelectCommand.Parameters.Add("@login", SqlDbType.VarChar); ;
 
             ContactUpdCmd.Parameters.Add("@Marked",SqlDbType.Bit);
             ContactUpdCmd.Parameters.Add("@Report",SqlDbType.VarChar);
@@ -72,6 +81,19 @@ namespace ProjectsReport
             getUser.Parameters.Add("@user", SqlDbType.VarChar);
             checkProjectManager.Parameters.Add("@user", SqlDbType.VarChar);
 
+        }
+
+        static public string updateContacts()
+        {
+            string result = string.Empty;
+            if (conn.State == ConnectionState.Closed) conn.Open();
+            SqlDataReader rdr = cmdUpdateContacts.ExecuteReader();
+            if (rdr.Read())
+            {
+                result = rdr["Result"].ToString();
+            }
+            conn.Close();
+            return result;
         }
 
         static public string getFullUserName(string login)
@@ -102,10 +124,18 @@ namespace ProjectsReport
             return result; 
         }
 
-        static public void fillContactsTable(DataTable table, DateTime date)
+        static public void fillContactsTable(DataTable table, DateTime date, string login = null)
         {
             if (conn.State == ConnectionState.Closed) conn.Open();
             contactsAdapter.SelectCommand.Parameters[0].Value = date;
+            if (login == null)
+            {
+                contactsAdapter.SelectCommand.Parameters[1].Value = DBNull.Value;
+            }
+            else
+            {
+                contactsAdapter.SelectCommand.Parameters[1].Value = login;
+            }
             table.Clear();
             contactsAdapter.Fill(table);
             conn.Close();

@@ -21,10 +21,9 @@ namespace ProjectsReport
 
         public Form1()
         {
-
             InitializeComponent();
 
-            this.Text = $"Отчет оператора  -- {user.Title}";
+            setTitle();
 
             gNewProgects.AutoGenerateColumns = false;
             gOldProgects.AutoGenerateColumns = false;
@@ -36,7 +35,10 @@ namespace ProjectsReport
         {
             (gNewProgects.DataSource as BindingSource).RemoveFilter();
             (gOldProgects.DataSource as BindingSource).RemoveFilter();
-            SqlFunctions.fillContactsTable(projects, activityDate.Value);
+            string updReport = "-- upd: " +  updateContacts(activityDate.Value);
+            setTitle(updReport);
+            SqlFunctions.fillContactsTable(projects, activityDate.Value,
+                (user.IsProjectManager)? null: user.Login);
             //projects.AcceptChanges();
             if (projects.Columns.Count == 0 )
             {
@@ -50,6 +52,21 @@ namespace ProjectsReport
             hideServiseColumn(gNewProgects);
         }
 
+        string updateContacts(DateTime date)
+        {
+            string result = "";
+            if (date.Date == DateTime.Today)
+            {
+                result = SqlFunctions.updateContacts();
+            }
+            return result;
+        }
+
+        void setTitle(string message = "")
+        {
+            this.Text = $"Отчет оператора  -- {user.Title}{message}";
+        }
+
         void hideServiseColumn(DataGridView dgv)
         {
             string[] columns = SqlFunctions.invisibleColumns;
@@ -58,7 +75,6 @@ namespace ProjectsReport
                 column.Visible = (!columns.Contains(column.Name));
             }
         }
-
 
         void addColumns(DataGridView grid)
         {

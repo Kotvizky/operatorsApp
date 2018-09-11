@@ -10,6 +10,7 @@ namespace ProjectsReport
         public User()
         {
             Login = Environment.UserName;
+//            Login = "VObytotskaia";
             FullName = SqlFunctions.getFullUserName(Login);
             IsProjectManager = SqlFunctions.isProjectManager(Login);
         }
